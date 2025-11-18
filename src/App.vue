@@ -1,30 +1,71 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import imageMapping from './mists/mapping.json'
 
-// Import dynamique de toutes les images du dossier mists
-const mistImagesGlob = import.meta.glob('/src/mists/*.png', { eager: true })
+// Import dynamique LAZY de toutes les images du dossier mists
+const mistImagesGlob = import.meta.glob('/src/mists/*.png', { import: 'default' })
 
-// Extraction des noms de fichiers sans extension
-const mistImages = Object.keys(mistImagesGlob).map(path => {
-  const fileName = path.split('/').pop() // Récupère le nom du fichier
-  return fileName.replace('.png', '') // Retire l'extension
+// Fonction de hash simple pour générer des IDs uniques
+const hashString = (str) => {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return Math.abs(hash).toString(36)
+}
+
+// Création de la base de données d'images avec mapping
+const imageDatabase = []
+const mistImages = [] // Liste des vrais noms pour l'autocomplétion
+
+Object.entries(mistImagesGlob).forEach(([path, loader]) => {
+  const anonymousFileName = path.split('/').pop() // ex: a7f3d2e9.png
+  const realName = imageMapping[anonymousFileName] // ex: m1_left
+
+  if (realName) {
+    const anonymousId = hashString(anonymousFileName + Date.now())
+
+    imageDatabase.push({
+      id: anonymousId,
+      name: realName,
+      loader: loader // Fonction qui charge l'image à la demande
+    })
+
+    mistImages.push(realName)
+  }
 })
 
-const currentImage = ref('')
+const currentImageId = ref('')
+const currentImageUrl = ref('')
 const userInput = ref('')
 const showResult = ref(false)
 const isCorrect = ref(false)
-const correctAnswer = ref('')
+const correctAnswer = ref('') // Ne sera rempli qu'après validation pour l'affichage
 const score = ref(0)
 const totalAttempts = ref(0)
 const filteredSuggestions = ref([])
 const showSuggestions = ref(false)
 const selectedIndex = ref(-1)
+const isLoading = ref(false)
 
-const loadRandomImage = () => {
-  const randomIndex = Math.floor(Math.random() * mistImages.length)
-  currentImage.value = mistImages[randomIndex]
-  correctAnswer.value = mistImages[randomIndex]
+const loadRandomImage = async () => {
+  isLoading.value = true
+  const randomIndex = Math.floor(Math.random() * imageDatabase.length)
+  const image = imageDatabase[randomIndex]
+
+  try {
+    // Charge l'image de manière lazy
+    const url = await image.loader()
+    currentImageId.value = image.id
+    currentImageUrl.value = url
+    correctAnswer.value = '' // Réinitialise pour cacher la réponse
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'image:', error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const filterSuggestions = () => {
@@ -64,13 +105,19 @@ const handleKeydown = (event) => {
 const validateGuess = () => {
   if (!userInput.value.trim()) return
 
+  // Récupère le vrai nom de l'image depuis la base de données
+  const currentImage = imageDatabase.find(img => img.id === currentImageId.value)
+  const realName = currentImage.name
+
   totalAttempts.value++
-  isCorrect.value = userInput.value.toLowerCase() === correctAnswer.value.toLowerCase()
+  isCorrect.value = userInput.value.toLowerCase() === realName.toLowerCase()
 
   if (isCorrect.value) {
     score.value++
   }
 
+  // Ne révèle le nom réel qu'après validation
+  correctAnswer.value = realName
   showResult.value = true
   showSuggestions.value = false
 }
@@ -99,7 +146,8 @@ onMounted(() => {
     <main class="main-content">
       <div class="image-container">
         <div class="image-wrapper">
-          <img :src="`src/mists/${currentImage}.png`" alt="Mist image" class="mist-image" />
+          <div v-if="isLoading" class="loading-indicator">Loading...</div>
+          <img v-else :src="currentImageUrl" alt="Mist image" class="mist-image" />
         </div>
       </div>
     </main>
@@ -223,6 +271,27 @@ onMounted(() => {
   display: block;
 }
 
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6fb3d2;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(111, 179, 210, 0.5);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .controls {
   padding: 1rem 2rem;
   background: rgba(10, 18, 28, 0.7);
@@ -338,7 +407,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
+  height: 65px;
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
