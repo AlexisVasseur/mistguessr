@@ -15,19 +15,24 @@ const selectedImage = ref(null)
 
 // Charger toutes les images
 onMounted(async () => {
-  const imagePromises = Object.entries(mistImagesGlob).map(async ([path, loader]) => {
-    const anonymousFileName = path.split('/').pop()
-    const realName = imageMapping[anonymousFileName]
+  const imagePromises = []
 
-    if (realName) {
-      const url = await loader()
-      return { name: realName, url }
-    }
-    return null
+  // Parcourir toutes les rooms et leurs exits
+  Object.values(imageMapping).forEach((room) => {
+    room.exits.forEach((exit) => {
+      const imagePath = `/src/mists/${exit.image}`
+      const loader = mistImagesGlob[imagePath]
+
+      if (loader) {
+        imagePromises.push(
+          loader().then(url => ({ name: exit.name, url }))
+        )
+      }
+    })
   })
 
   const loadedImages = await Promise.all(imagePromises)
-  images.value = loadedImages.filter(img => img !== null).sort((a, b) => a.name.localeCompare(b.name))
+  images.value = loadedImages.sort((a, b) => a.name.localeCompare(b.name))
   isLoading.value = false
 })
 

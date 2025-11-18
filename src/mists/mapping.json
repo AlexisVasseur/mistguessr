@@ -1,34 +1,74 @@
 {
-  "a7f3d2e9.png": "m8_right_lower",
-  "b9c4e1f2.png": "m8_right_upper",
-  "c1d5a8b3.png": "m8_top",
-  "d3e7f9c4.png": "m1_left",
-  "e5f1a2d6.png": "m1_right",
-  "f7a3b4e8.png": "m1_top",
-  "a1b2c3d4.png": "m2_bottom",
-  "b2c3d4e5.png": "m2_left_upper",
-  "c3d4e5f6.png": "m2_left_lower",
-  "d4e5f6a7.png": "m2_right",
-  "e5f6a7b8.png": "m2_top",
-  "f6a7b8c9.png": "m3_left_lower",
-  "a7b8c9d0.png": "m3_left_upper",
-  "b8c9d0e1.png": "m3_right",
-  "c9d0e1f2.png": "m3_top",
-  "d0e1f2a3.png": "m4_bottom",
-  "e1f2a3b4.png": "m4_left",
-  "f2a3b4c5.png": "m4_right",
-  "a3b4c5d6.png": "m4_top-left",
-  "b4c5d6e7.png": "m4_top-right",
-  "c5d6e7f8.png": "m5_bottom",
-  "d6e7f8a9.png": "m5_left",
-  "e7f8a9b0.png": "m5_right_lower",
-  "f8a9b0c1.png": "m5_right_upper",
-  "a9b0c1d2.png": "m5_top",
-  "b0c1d2e3.png": "m6_left",
-  "c1d2e3f4.png": "m6_right",
-  "d2e3f4a5.png": "m6_top",
-  "e3f4a5b6.png": "m7_bottom",
-  "f4a5b6c7.png": "m7_left",
-  "a5b6c7d8.png": "m7_top",
-  "b6c7d8e9.png": "m8_left"
+  "m1": {
+    "name": "m1",
+    "exits": [
+      { "name": "m1_left", "image": "d3e7f9c4.png" },
+      { "name": "m1_right", "image": "e5f1a2d6.png" },
+      { "name": "m1_top", "image": "f7a3b4e8.png" }
+    ]
+  },
+  "m2": {
+    "name": "m2",
+    "exits": [
+      { "name": "m2_bottom", "image": "a1b2c3d4.png" },
+      { "name": "m2_left_upper", "image": "b2c3d4e5.png" },
+      { "name": "m2_left_lower", "image": "c3d4e5f6.png" },
+      { "name": "m2_right", "image": "d4e5f6a7.png" },
+      { "name": "m2_top", "image": "e5f6a7b8.png" }
+    ]
+  },
+  "m3": {
+    "name": "m3",
+    "exits": [
+      { "name": "m3_left_lower", "image": "f6a7b8c9.png" },
+      { "name": "m3_left_upper", "image": "a7b8c9d0.png" },
+      { "name": "m3_right", "image": "b8c9d0e1.png" },
+      { "name": "m3_top", "image": "c9d0e1f2.png" }
+    ]
+  },
+  "m4": {
+    "name": "m4",
+    "exits": [
+      { "name": "m4_bottom", "image": "d0e1f2a3.png" },
+      { "name": "m4_left", "image": "e1f2a3b4.png" },
+      { "name": "m4_right", "image": "f2a3b4c5.png" },
+      { "name": "m4_top-left", "image": "a3b4c5d6.png" },
+      { "name": "m4_top-right", "image": "b4c5d6e7.png" }
+    ]
+  },
+  "m5": {
+    "name": "m5",
+    "exits": [
+      { "name": "m5_bottom", "image": "c5d6e7f8.png" },
+      { "name": "m5_left", "image": "d6e7f8a9.png" },
+      { "name": "m5_right_lower", "image": "e7f8a9b0.png" },
+      { "name": "m5_right_upper", "image": "f8a9b0c1.png" },
+      { "name": "m5_top", "image": "a9b0c1d2.png" }
+    ]
+  },
+  "m6": {
+    "name": "m6",
+    "exits": [
+      { "name": "m6_left", "image": "b0c1d2e3.png" },
+      { "name": "m6_right", "image": "c1d2e3f4.png" },
+      { "name": "m6_top", "image": "d2e3f4a5.png" }
+    ]
+  },
+  "m7": {
+    "name": "m7",
+    "exits": [
+      { "name": "m7_bottom", "image": "e3f4a5b6.png" },
+      { "name": "m7_left", "image": "f4a5b6c7.png" },
+      { "name": "m7_top", "image": "a5b6c7d8.png" }
+    ]
+  },
+  "m8": {
+    "name": "m8",
+    "exits": [
+      { "name": "m8_left", "image": "b6c7d8e9.png" },
+      { "name": "m8_right_lower", "image": "a7f3d2e9.png" },
+      { "name": "m8_right_upper", "image": "b9c4e1f2.png" },
+      { "name": "m8_top", "image": "c1d5a8b3.png" }
+    ]
+  }
 }
