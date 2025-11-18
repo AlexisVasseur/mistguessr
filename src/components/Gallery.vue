@@ -1,26 +1,39 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import imageMapping from '../mists/mapping.json'
+import imageMapping from '../assets/exits/mapping.json'
 import ImageModal from './ImageModal.vue'
 
 const emit = defineEmits(['close'])
 
 // Import lazy des images
-const mistImagesGlob = import.meta.glob('/src/mists/*.png', { import: 'default' })
+const mistImagesGlob = import.meta.glob('/src/assets/exits/*.png', { import: 'default' })
+const roomImagesGlob = import.meta.glob('/src/assets/rooms/*.png', { import: 'default' })
 
-// Liste des images avec leurs infos
-const images = ref([])
+// Liste des salles avec leurs images
+const roomGroups = ref([])
 const isLoading = ref(true)
 const selectedImage = ref(null)
 
-// Charger toutes les images
+// Charger toutes les images groupées par salle
 onMounted(async () => {
-  const imagePromises = []
+  const groups = []
 
-  // Parcourir toutes les rooms et leurs exits
-  Object.values(imageMapping).forEach((room) => {
+  // Parcourir toutes les rooms
+  for (const [roomName, room] of Object.entries(imageMapping)) {
+    const imagePromises = []
+
+    // Charger l'image de la room
+    const roomImagePath = `/src/assets/rooms/${room.room}`
+    const roomLoader = roomImagesGlob[roomImagePath]
+    let roomImageUrl = null
+
+    if (roomLoader) {
+      roomImageUrl = await roomLoader()
+    }
+
+    // Charger les exits
     room.exits.forEach((exit) => {
-      const imagePath = `/src/mists/${exit.image}`
+      const imagePath = `/src/assets/exits/${exit.image}`
       const loader = mistImagesGlob[imagePath]
 
       if (loader) {
@@ -29,10 +42,17 @@ onMounted(async () => {
         )
       }
     })
-  })
 
-  const loadedImages = await Promise.all(imagePromises)
-  images.value = loadedImages.sort((a, b) => a.name.localeCompare(b.name))
+    const loadedImages = await Promise.all(imagePromises)
+    groups.push({
+      roomName: roomName,
+      roomImage: roomImageUrl,
+      images: loadedImages.sort((a, b) => a.name.localeCompare(b.name))
+    })
+  }
+
+  // Trier les groupes par nom de salle
+  roomGroups.value = groups.sort((a, b) => a.roomName.localeCompare(b.roomName))
   isLoading.value = false
 })
 
@@ -54,17 +74,36 @@ const closeModal = () => {
 
     <div v-if="isLoading" class="loading">Loading gallery...</div>
 
-    <div v-else class="gallery-grid">
-      <div
-        v-for="image in images"
-        :key="image.name"
-        @click="openModal(image)"
-        class="gallery-item"
-      >
-        <div class="image-wrapper">
-          <img :src="image.url" :alt="image.name" class="gallery-image" />
+    <div v-else class="gallery-content">
+      <div v-for="group in roomGroups" :key="group.roomName" class="room-section">
+        <h2 class="room-title">{{ group.roomName }}</h2>
+
+        <div class="gallery-grid">
+          <!-- Room image as first item -->
+          <div
+            v-if="group.roomImage"
+            @click="openModal({ name: `${group.roomName} (complete room)`, url: group.roomImage })"
+            class="gallery-item room-item"
+          >
+            <div class="image-wrapper">
+              <img :src="group.roomImage" :alt="`${group.roomName} complete room`" class="gallery-image" />
+            </div>
+            <div class="image-name">{{ group.roomName }} (complete)</div>
+          </div>
+
+          <!-- Exits -->
+          <div
+            v-for="image in group.images"
+            :key="image.name"
+            @click="openModal(image)"
+            class="gallery-item"
+          >
+            <div class="image-wrapper">
+              <img :src="image.url" :alt="image.name" class="gallery-image" />
+            </div>
+            <div class="image-name">{{ image.name }}</div>
+          </div>
         </div>
-        <div class="image-name">{{ image.name }}</div>
       </div>
     </div>
 
@@ -132,11 +171,34 @@ const closeModal = () => {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.gallery-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.room-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.room-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-accent);
+  text-shadow: var(--shadow-glow);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-md);
+  text-transform: uppercase;
+  margin: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border-secondary);
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--spacing-xl);
-  padding: var(--spacing-md) 0;
 }
 
 .gallery-item {
@@ -160,9 +222,18 @@ const closeModal = () => {
   transition: border-color var(--transition-normal);
 }
 
+.room-item .image-wrapper {
+  border-color: var(--color-border-accent);
+}
+
 .gallery-item:hover .image-wrapper {
   border-color: var(--color-border-accent);
   box-shadow: var(--shadow-glow-strong);
+}
+
+.room-item:hover .image-wrapper {
+  border-color: var(--color-text-accent);
+  box-shadow: var(--shadow-glow-intense);
 }
 
 .gallery-image {

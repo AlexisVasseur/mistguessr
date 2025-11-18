@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import imageMapping from '../mists/mapping.json'
+import imageMapping from '../assets/exits/mapping.json'
 
 const emit = defineEmits(['openGallery'])
 
-// Import dynamique LAZY de toutes les images du dossier mists
-const mistImagesGlob = import.meta.glob('/src/mists/*.png', { import: 'default' })
+// Import dynamique LAZY de toutes les images du dossier exits
+const mistImagesGlob = import.meta.glob('/src/assets/exits/*.png', { import: 'default' })
 
 // Fonction de hash simple pour générer des IDs uniques
 const hashString = (str) => {
@@ -25,7 +25,7 @@ const mistImages = [] // Liste des vrais noms pour l'autocomplétion
 // Parcourir toutes les rooms et leurs exits
 Object.values(imageMapping).forEach((room) => {
   room.exits.forEach((exit) => {
-    const imagePath = `/src/mists/${exit.image}`
+    const imagePath = `/src/assets/exits/${exit.image}`
     const loader = mistImagesGlob[imagePath]
 
     if (loader) {

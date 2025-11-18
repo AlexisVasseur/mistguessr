@@ -1,6 +1,7 @@
 {
   "m1": {
     "name": "m1",
+    "room": "m1_combined.png",
     "exits": [
       { "name": "m1_left", "image": "d3e7f9c4.png" },
       { "name": "m1_right", "image": "e5f1a2d6.png" },
@@ -9,6 +10,7 @@
   },
   "m2": {
     "name": "m2",
+    "room": "m2_combined.png",
     "exits": [
       { "name": "m2_bottom", "image": "a1b2c3d4.png" },
       { "name": "m2_left_upper", "image": "b2c3d4e5.png" },
@@ -19,6 +21,7 @@
   },
   "m3": {
     "name": "m3",
+    "room": "m3_combined.png",
     "exits": [
       { "name": "m3_left_lower", "image": "f6a7b8c9.png" },
       { "name": "m3_left_upper", "image": "a7b8c9d0.png" },
@@ -28,6 +31,7 @@
   },
   "m4": {
     "name": "m4",
+    "room": "m4_combined.png",
     "exits": [
       { "name": "m4_bottom", "image": "d0e1f2a3.png" },
       { "name": "m4_left", "image": "e1f2a3b4.png" },
@@ -38,6 +42,7 @@
   },
   "m5": {
     "name": "m5",
+    "room": "m5_combined.png",
     "exits": [
       { "name": "m5_bottom", "image": "c5d6e7f8.png" },
       { "name": "m5_left", "image": "d6e7f8a9.png" },
@@ -48,6 +53,7 @@
   },
   "m6": {
     "name": "m6",
+    "room": "m6_combined.png",
     "exits": [
       { "name": "m6_left", "image": "b0c1d2e3.png" },
       { "name": "m6_right", "image": "c1d2e3f4.png" },
@@ -56,6 +62,7 @@
   },
   "m7": {
     "name": "m7",
+    "room": "m7_combined.png",
     "exits": [
       { "name": "m7_bottom", "image": "e3f4a5b6.png" },
       { "name": "m7_left", "image": "f4a5b6c7.png" },
@@ -64,6 +71,7 @@
   },
   "m8": {
     "name": "m8",
+    "room": "m8_combined.png",
     "exits": [
       { "name": "m8_left", "image": "b6c7d8e9.png" },
       { "name": "m8_right_lower", "image": "a7f3d2e9.png" },
