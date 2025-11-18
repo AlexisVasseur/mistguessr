@@ -1,16 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const mistImages = [
-  'm1_left', 'm1_right', 'm1_top',
-  'm2_left_lower', 'm2_left_upper', 'm2_right', 'm2_top', 'm2_bottom',
-  'm3_left_upper', 'm3_left_lower', 'm3_right', 'm3_top',
-  'm4_left', 'm4_right', 'm4_top-left', 'm4_top-right', 'm4_bottom',
-  'm5_left', 'm5_right_lower', 'm5_right_upper', 'm5_top', 'm5_bottom',
-  'm6_left',
-  'm7_left', 'm7_top', 'm7_bottom',
-  'm8_left', 'm8_right_upper', 'm8_top'
-]
+// Import dynamique de toutes les images du dossier mists
+const mistImagesGlob = import.meta.glob('/src/mists/*.png', { eager: true })
+
+// Extraction des noms de fichiers sans extension
+const mistImages = Object.keys(mistImagesGlob).map(path => {
+  const fileName = path.split('/').pop() // Récupère le nom du fichier
+  return fileName.replace('.png', '') // Retire l'extension
+})
 
 const currentImage = ref('')
 const userInput = ref('')
@@ -101,7 +99,7 @@ onMounted(() => {
     <main class="main-content">
       <div class="image-container">
         <div class="image-wrapper">
-          <img :src="`/mists/${currentImage}.png`" alt="Mist image" class="mist-image" />
+          <img :src="`src/mists/${currentImage}.png`" alt="Mist image" class="mist-image" />
         </div>
       </div>
     </main>
@@ -149,23 +147,25 @@ onMounted(() => {
 
 <style scoped>
 .app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, #1a2332 0%, #0d1621 100%);
   color: #a8c7d7;
+  overflow: hidden;
 }
 
 .header {
-  padding: 2rem;
+  padding: 1rem 2rem;
   text-align: center;
   background: rgba(10, 18, 28, 0.5);
   border-bottom: 2px solid #2d4a5a;
+  flex-shrink: 0;
 }
 
 .header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
   color: #6fb3d2;
   text-shadow: 0 0 10px rgba(111, 179, 210, 0.3);
   font-weight: 300;
@@ -173,7 +173,7 @@ onMounted(() => {
 }
 
 .score-display {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #8fc4d9;
   font-weight: 500;
 }
@@ -183,9 +183,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   overflow: hidden;
   box-sizing: border-box;
+  min-height: 0;
 }
 
 .image-container {
@@ -193,24 +194,24 @@ onMounted(() => {
   border: 3px solid #3d5a6a;
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .image-wrapper {
   width: 100%;
   height: 100%;
-  max-width: 1200px;
-  max-height: calc(100vh - 350px);
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .mist-image {
@@ -223,13 +224,13 @@ onMounted(() => {
 }
 
 .controls {
-  padding: 2rem;
+  padding: 1rem 2rem;
   background: rgba(10, 18, 28, 0.7);
   border-top: 2px solid #2d4a5a;
-  min-height: 180px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .input-section {
@@ -248,8 +249,8 @@ onMounted(() => {
 
 .guess-input {
   width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
   background: rgba(26, 35, 50, 0.8);
   border: 2px solid #3d5a6a;
   border-radius: 6px;
@@ -304,8 +305,8 @@ onMounted(() => {
 
 .validate-btn,
 .next-btn {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   background: linear-gradient(135deg, #4a7c94 0%, #3d5a6a 100%);
   border: 2px solid #6fb3d2;
   border-radius: 6px;
@@ -315,7 +316,7 @@ onMounted(() => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
-  min-width: 120px;
+  min-width: 100px;
   flex-shrink: 0;
 }
 
@@ -337,16 +338,16 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 70px;
+  min-height: 50px;
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
 }
 
 .result-message {
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 6px;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 500;
   width: 100%;
 }
@@ -365,15 +366,29 @@ onMounted(() => {
 
 @media (max-width: 768px) {
   .header h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+  }
+
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .main-content {
+    padding: 0.5rem;
   }
 
   .input-section {
     flex-direction: column;
+    gap: 0.5rem;
   }
 
-  .image-container {
-    max-height: 50vh;
+  .controls {
+    padding: 0.75rem 1rem;
+  }
+
+  .validate-btn,
+  .next-btn {
+    width: 100%;
   }
 }
 </style>
