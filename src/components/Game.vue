@@ -58,6 +58,19 @@ const filteredSuggestions = ref([])
 const showSuggestions = ref(false)
 const selectedIndex = ref(-1)
 const isLoading = ref(false)
+const showHelpPopover = ref(false)
+const helpIconRef = ref(null)
+const popoverPosition = ref({ top: 0, left: 0 })
+
+const updatePopoverPosition = () => {
+  if (helpIconRef.value) {
+    const rect = helpIconRef.value.getBoundingClientRect()
+    popoverPosition.value = {
+      top: rect.bottom + 5,
+      left: rect.right
+    }
+  }
+}
 
 const loadRandomImage = async () => {
   isLoading.value = true
@@ -184,7 +197,18 @@ onMounted(() => {
 
       <div class="input-section">
         <div class="input-group">
-          <label class="input-label">Exit name:</label>
+          <div class="label-with-help">
+            <label class="input-label">Exit name:</label>
+            <span
+              ref="helpIconRef"
+              class="help-icon"
+              @mouseenter="showHelpPopover = true; updatePopoverPosition()"
+              @mouseleave="showHelpPopover = false"
+              @click="showHelpPopover = !showHelpPopover; updatePopoverPosition()"
+            >
+              ?
+            </span>
+          </div>
           <div class="autocomplete-wrapper">
             <input
               v-model="userInput"
@@ -254,6 +278,20 @@ onMounted(() => {
       <rect x="3" y="14" width="7" height="7"></rect>
     </svg>
   </button>
+
+  <!-- Popover téléporté au body -->
+  <Teleport to="body">
+    <div
+      v-if="showHelpPopover"
+      class="help-popover"
+      :style="{
+        top: popoverPosition.top + 'px',
+        left: popoverPosition.left + 'px'
+      }"
+    >
+      Start by typing the letter 'm' to see the list of available answers
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -301,6 +339,8 @@ onMounted(() => {
   overflow: hidden;
   box-sizing: border-box;
   min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .image-container {
@@ -367,6 +407,9 @@ onMounted(() => {
   gap: var(--spacing-xl);
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: visible;
+  position: relative;
+  z-index: 10;
 }
 
 .input-section {
@@ -374,12 +417,14 @@ onMounted(() => {
   flex-direction: column;
   gap: var(--spacing-md);
   width: 100%;
+  overflow: visible;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  overflow: visible;
 }
 
 .input-label {
@@ -388,6 +433,62 @@ onMounted(() => {
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-sm);
+}
+
+.label-with-help {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid var(--color-text-secondary);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  cursor: help;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.help-icon:hover {
+  border-color: var(--color-text-accent);
+  color: var(--color-text-accent);
+  transform: scale(1.1);
+}
+
+.help-popover {
+  position: fixed;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-overlay-dark);
+  border: 2px solid var(--color-border-accent);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  z-index: 9999;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  transform: translateX(-100%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .button-group {
